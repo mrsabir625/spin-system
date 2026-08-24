@@ -1,0 +1,8 @@
+{
+    "cleanUrls": true,
+    "routes": [
+        { "hamdle": "filesystem"},
+        { "src": "/(.*)", "dest": "/index.html" }
+    
+   ]
+}
