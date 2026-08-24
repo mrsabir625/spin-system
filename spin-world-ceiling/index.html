@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spin World Ceiling System | POP False Ceiling Designs</title>
+//idhar meta discription likhna hy //
+<link rel="icon" type="image/jpeg" href="images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+//idhar google ki verification link laga na hy //
+<style>
+  :root{
+    --ivory:#EDE6DA;
+    --charcoal:#211F1C;
+    --brass:#C89B5C;
+    --plum:#4A4038;
+    --offwhite:#F5F1E8;
+    --line: rgba(237,230,218,0.14);
+    --credit:#b98cff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--charcoal);
+    color:var(--offwhite);
+    font-family:'Work Sans', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{ -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  ::selection{background:var(--brass);color:var(--charcoal);}
+  a:focus-visible, button:focus-visible, .photo-card:focus-visible, .cat-card:focus-visible{
+    outline:2px solid var(--brass);
+    outline-offset:3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:22px 6vw;
+    background:linear-gradient(to bottom, rgba(33,31,28,0.9), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces', serif; font-size:1.15rem; font-weight:600; letter-spacing:0.02em; }
+  .brand span{color:var(--brass);}
+  .brand img{ height:36px; width:auto; display:block; }
+  @media(max-width:700px){ .brand img{ height:28px; } .brand .brand-text{ display:none; } }
+  nav ul{list-style:none;display:flex;gap:34px;}
+  nav a{ font-size:0.85rem; text-transform:uppercase; letter-spacing:0.12em; opacity:0.8; transition:opacity .25s; position:relative; }
+  nav a:hover{opacity:1;}
+  nav a::after{ content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px; background:var(--brass); transition:width .3s ease; }
+  nav a:hover::after{width:100%;}
+  @media(max-width:700px){ nav ul{gap:16px;} nav a{font-size:0.7rem;} }
+
+  /* ---------- HERO ---------- */
+  .hero{ height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; padding:0 6vw; overflow:hidden; }
+  #glow{ position:absolute; inset:0; pointer-events:none; background: radial-gradient(500px circle at var(--gx,50%) var(--gy,30%), rgba(200,155,92,0.16), transparent 60%); transition: background .1s linear; }
+  .eyebrow{ font-size:0.78rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--brass); margin-bottom:22px; opacity:0; animation: fadeUp .9s ease .2s forwards; }
+  .hero h1{ font-size:clamp(2.6rem, 7vw, 5.6rem); line-height:1.02; max-width:14ch; opacity:0; animation: fadeUp 1s ease .4s forwards; }
+  .hero p{ margin-top:26px; max-width:46ch; font-size:1.05rem; color:var(--ivory); opacity:0; animation: fadeUp 1s ease .65s forwards; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+  .coving-wrap{ width:min(680px, 80vw); margin-top:44px; opacity:0; animation: fadeUp 1.1s ease .85s forwards; }
+  .coving-wrap svg{ width:100%; height:auto; display:block; }
+  .coving-line{ fill:none; stroke:var(--brass); stroke-width:1.6; stroke-dasharray:1400; stroke-dashoffset:1400; animation: draw 2.6s cubic-bezier(.65,0,.35,1) 1.1s forwards; }
+  .coving-line-2{ fill:none; stroke:var(--ivory); stroke-opacity:0.35; stroke-width:1; stroke-dasharray:1400; stroke-dashoffset:1400; animation: draw 2.6s cubic-bezier(.65,0,.35,1) 1.4s forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .scroll-cue{ position:absolute; bottom:30px; left:50%; transform:translateX(-50%); font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; opacity:0.5; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .scroll-cue .stick{ width:1px; height:26px; background:var(--offwhite); animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:.2;} 50%{opacity:.8;} }
+
+  /* ---------- CATEGORY PICKER ---------- */
+  section.categories{ padding:120px 6vw 80px; max-width:1300px; margin:0 auto; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:20px; border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:44px; flex-wrap:wrap; }
+  .section-head h2{ font-size:clamp(1.9rem,4vw,3rem); }
+  .section-head .tag{ font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--brass); }
+  .section-note{ max-width:56ch; color:var(--ivory); opacity:0.75; margin-bottom:44px; font-size:0.95rem;}
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  .cat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+  @media(max-width:900px){ .cat-grid{ grid-template-columns:1fr; } }
+
+  .cat-card{
+    position:relative; aspect-ratio:3/4; border-radius:3px; overflow:hidden;
+    cursor:pointer; border:1px solid var(--line);
+    background:linear-gradient(135deg, var(--plum) 0%, #2b2621 100%);
+  }
+  .cat-card img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .7s cubic-bezier(.2,.7,.3,1); pointer-events:none; }
+  .cat-card:hover img{ transform:scale(1.08); }
+  .cat-card .shield{ position:absolute; inset:0; z-index:2; } /* blocks drag/right-click on image beneath */
+  .cat-card .veil{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.78) 10%, rgba(0,0,0,0.1) 55%, transparent 75%); }
+  .cat-card .ph-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--ivory); opacity:0.4; font-size:0.85rem; }
+  .cat-card .cat-body{ position:absolute; left:0; right:0; bottom:0; padding:26px; z-index:3; }
+  .cat-card .cat-body h3{ font-size:1.7rem; margin-bottom:6px; }
+  .cat-card .cat-body p{ font-size:0.82rem; opacity:0.7; letter-spacing:0.03em; }
+  .cat-card .arrow{ display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--brass); }
+  .cat-card .arrow svg{ width:14px; height:14px; transition:transform .3s ease; }
+  .cat-card:hover .arrow svg{ transform:translateX(4px); }
+
+  /* ---------- GALLERY OVERLAY ---------- */
+  .overlay{
+    position:fixed; inset:0; background:var(--charcoal); z-index:500;
+    transform:translateY(100%); transition:transform .5s cubic-bezier(.2,.8,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .overlay.open{ transform:translateY(0); }
+  .overlay-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6vw; border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .overlay-head h2{ font-size:clamp(1.5rem,3.5vw,2.2rem); }
+  .overlay-head .sub{ font-size:0.78rem; color:var(--brass); letter-spacing:0.12em; text-transform:uppercase; margin-top:4px; }
+  .overlay-close{
+    width:42px; height:42px; border-radius:50%; border:1px solid var(--line);
+    background:none; color:var(--offwhite); font-size:1.3rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:background .2s ease;
+  }
+  .overlay-close:hover{ background:rgba(245,241,232,0.08); }
+  .overlay-scroll{ flex:1; overflow-y:auto; padding:36px 6vw 140px; -webkit-overflow-scrolling:touch; }
+
+  .photo-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; max-width:1300px; margin:0 auto; }
+  @media(max-width:767px){ .photo-grid{ grid-template-columns:repeat(2,1fr); gap:14px; } }
+
+  .photo-card{ position:relative; aspect-ratio:4/3; border-radius:2px; overflow:hidden; cursor:pointer; background:linear-gradient(135deg, var(--plum) 0%, #2b2621 100%); border:1px solid var(--line); }
+  .photo-card img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(.2,.7,.3,1); pointer-events:none; }
+  .photo-card:hover img{ transform:scale(1.07); }
+  .photo-card .shield{ position:absolute; inset:0; z-index:2; }
+  .ph-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; color:var(--ivory); opacity:0.55; font-size:0.8rem; letter-spacing:0.05em; text-align:center; padding:14px; }
+  .ph-fallback .num{ font-family:'Fraunces',serif; font-size:1.6rem; color:var(--brass); opacity:0.9;}
+  .photo-card .num-badge{ position:absolute; top:10px; left:10px; font-size:0.72rem; letter-spacing:0.1em; background:rgba(33,31,28,0.65); color:var(--offwhite); padding:4px 9px; border-radius:20px; backdrop-filter:blur(3px); z-index:3; }
+  .check{ position:absolute; top:10px; right:10px; width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(245,241,232,0.6); background:rgba(33,31,28,0.4); display:flex; align-items:center; justify-content:center; transition:all .25s ease; z-index:3; }
+  .check svg{ width:13px; height:13px; opacity:0; transform:scale(0.5); transition:all .2s ease; }
+  .photo-card.selected .check{ background:var(--brass); border-color:var(--brass); }
+  .photo-card.selected .check svg{ opacity:1; transform:scale(1); }
+  .photo-card.selected{ box-shadow:0 0 0 2px var(--brass) inset; }
+  .photo-card.selected::before{ content:''; position:absolute; inset:0; background:rgba(200,155,92,0.12); pointer-events:none; z-index:1; }
+  .photo-card .veil{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55), transparent 45%); pointer-events:none; }
+
+  /* ---------- SELECTION TRAY ---------- */
+  .tray{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(140%); background:var(--offwhite); color:var(--charcoal); border-radius:50px; padding:12px 12px 12px 22px; display:flex; align-items:center; gap:16px; box-shadow:0 14px 40px rgba(0,0,0,0.4); z-index:600; transition: transform .45s cubic-bezier(.2,.8,.2,1); max-width:92vw; }
+  .tray.show{ transform:translateX(-50%) translateY(0); }
+  .tray .count{ font-size:0.9rem; font-weight:500; white-space:nowrap; }
+  .tray .count b{ color:var(--brass); font-family:'Fraunces',serif; font-size:1.05rem; }
+  .tray button.send{ background:var(--charcoal); color:var(--offwhite); border:none; border-radius:40px; padding:11px 20px; font-size:0.85rem; letter-spacing:0.04em; display:flex; align-items:center; gap:8px; cursor:pointer; transition:background .25s ease, transform .15s ease; white-space:nowrap; }
+  .tray button.send:hover{ background:#000; transform:translateY(-1px); }
+  .tray button.clear{ background:none; border:none; color:var(--charcoal); opacity:0.55; font-size:1.2rem; cursor:pointer; line-height:1; padding:6px; }
+  .tray button.clear:hover{ opacity:1; }
+
+  /* ---------- CTA ---------- */
+  .cta{ padding:140px 6vw; text-align:center; border-top:1px solid var(--line); }
+  .cta h2{ font-size:clamp(2rem,5vw,3.4rem); max-width:16ch; margin:0 auto 20px; }
+  .cta p{ color:var(--ivory); opacity:0.75; max-width:44ch; margin:0 auto 36px; }
+  .cta .btn{ display:inline-flex; align-items:center; gap:10px; background:var(--brass); color:var(--charcoal); padding:15px 30px; border-radius:40px; font-weight:500; letter-spacing:0.03em; transition:transform .2s ease, box-shadow .2s ease; }
+  .cta .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(200,155,92,0.3); }
+
+  /* ---------- FOOTER (matches reference layout) ---------- */
+  footer{ background:#000; color:#9098a3; padding:50px 6vw 26px; }
+  .f-social{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:34px; }
+  .f-social a{ width:42px; height:42px; border-radius:50%; border:1px solid #3a3a3a; display:flex; align-items:center; justify-content:center; transition:all .25s ease; color:#fff; }
+  .f-social a:hover{ background:#fff; color:#000; transform:translateY(-2px); }
+  .f-social svg{ width:18px; height:18px; }
+  .f-divider{ border:none; border-top:1px solid #2a2a2a; margin:26px 0; }
+  .f-columns{ display:grid; grid-template-columns:repeat(3, 1fr); gap:30px; margin-bottom:10px; }
+  @media(max-width:700px){ .f-columns{ grid-template-columns:1fr; gap:34px; } }
+  .f-columns h4{ color:#fff; font-family:'Fraunces',serif; font-size:1.1rem; font-weight:600; margin-bottom:16px; }
+  .f-columns ul{ list-style:none; display:flex; flex-direction:column; gap:12px; }
+  .f-columns a, .f-columns li{ color:#8f97a3; font-size:0.95rem; }
+  .f-columns a{ transition:color .2s ease; }
+  .f-columns a:hover{ color:#fff; }
+  .f-bottom{ text-align:center; padding-top:30px; }
+  .f-bottom .legal{ font-size:0.85rem; color:#7d8590; margin-bottom:18px; }
+  .f-bottom .legal a:hover{ color:#fff; }
+  .f-bottom .credit{ font-size:0.9rem; color:#8f97a3; margin-bottom:8px; }
+  .f-bottom .credit a{ color:var(--credit); font-weight:600; }
+  .f-bottom .credit a:hover{ text-decoration:underline; }
+  .f-bottom .copyright{ font-size:0.85rem; color:#7d8590; }
+
+  /* ---------- EYE PREVIEW ICON + LIGHTBOX ---------- */
+  .eye-btn{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.9);
+    width:46px; height:46px; border-radius:50%;
+    background:rgba(33,31,28,0.55); border:1.5px solid rgba(245,241,232,0.55);
+    backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:4; opacity:0.85; transition:all .25s ease;
+  }
+  .eye-btn:hover{ opacity:1; background:var(--brass); border-color:var(--brass); transform:translate(-50%,-50%) scale(1.08); }
+  .eye-btn:hover svg{ stroke:var(--charcoal); }
+  .eye-btn svg{ width:20px; height:20px; stroke:var(--offwhite); transition:stroke .2s ease; }
+  @media(hover:hover){
+    .eye-btn{ opacity:0; transform:translate(-50%,-50%) scale(0.7); }
+    .photo-card:hover .eye-btn, .cat-card:hover .eye-btn,
+    .photo-card:focus-within .eye-btn, .cat-card:focus-within .eye-btn{ opacity:0.95; transform:translate(-50%,-50%) scale(1); }
+  }
+
+  .lightbox{
+    position:fixed; inset:0; z-index:900;
+    background:rgba(10,9,8,0.88); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    padding:5vw;
+    opacity:0; pointer-events:none; transition:opacity .3s ease;
+  }
+  .lightbox.open{ opacity:1; pointer-events:auto; }
+  .lightbox img{
+    max-width:90vw; max-height:88vh; width:auto; height:auto;
+    object-fit:contain; border-radius:4px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.6);
+    transform:scale(0.96); transition:transform .3s ease;
+  }
+  .lightbox.open img{ transform:scale(1); }
+  .lightbox-close{
+    position:fixed; top:22px; right:22px; z-index:901;
+    width:46px; height:46px; border-radius:50%;
+    background:rgba(245,241,232,0.1); border:1px solid rgba(245,241,232,0.3);
+    color:var(--offwhite); font-size:1.5rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s ease;
+  }
+  .lightbox-close:hover{ background:rgba(245,241,232,0.22); }
+  /* ---------- WHAT WE DO ---------- */
+  section.what-we-do{ padding:20px 6vw 100px; max-width:1300px; margin:0 auto; }
+  .wwd-grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:60px; align-items:start; }
+  @media(max-width:900px){ .wwd-grid{ grid-template-columns:1fr; gap:30px; } }
+  .wwd-grid p{ color:var(--ivory); opacity:0.85; line-height:1.85; font-size:1rem; }
+  .wwd-list{ list-style:none; display:flex; flex-direction:column; gap:16px; }
+  .wwd-list li{ display:flex; gap:12px; align-items:flex-start; font-size:0.95rem; color:var(--ivory); }
+  .wwd-list li svg{ width:18px; height:18px; flex-shrink:0; margin-top:3px; color:var(--brass); }
+
+  /* ---------- ENQUIRY FORM ---------- */
+  section.enquiry{ padding:20px 6vw 100px; max-width:900px; margin:0 auto; }
+  .enquiry-box{ background:rgba(245,241,232,0.04); border:1px solid var(--line); border-radius:14px; padding:36px; }
+  @media(max-width:600px){ .enquiry-box{ padding:24px 20px; } }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  @media(max-width:600px){ .form-row{ grid-template-columns:1fr; } }
+  .form-field label{ display:block; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--brass); margin-bottom:8px; }
+  .form-field input{
+    width:100%; background:rgba(245,241,232,0.06); border:1px solid var(--line); border-radius:8px;
+    padding:12px 14px; color:var(--offwhite); font-family:inherit; font-size:0.95rem;
+  }
+  .form-field input:focus{ outline:none; border-color:var(--brass); }
+  .room-row{ display:grid; grid-template-columns:1fr 1fr auto; gap:12px; margin-bottom:12px; align-items:end; }
+  @media(max-width:600px){ .room-row{ grid-template-columns:1fr 1fr; } .room-row .remove-room{ grid-column:1/-1; } }
+  .remove-room{
+    background:none; border:1px solid var(--line); color:var(--offwhite); opacity:0.6;
+    border-radius:8px; padding:12px; cursor:pointer; font-size:0.85rem; white-space:nowrap;
+  }
+  .remove-room:hover{ opacity:1; border-color:var(--brass); }
+  .add-room-btn{
+    background:none; border:1px dashed var(--line); color:var(--brass);
+    border-radius:8px; padding:10px 16px; font-size:0.85rem; cursor:pointer; margin-bottom:22px;
+    display:inline-flex; align-items:center; gap:8px; transition:border-color .2s ease;
+  }
+  .add-room-btn:hover{ border-color:var(--brass); }
+  .enquiry-submit{
+    width:100%; background:var(--brass); color:var(--charcoal); border:none; border-radius:40px;
+    padding:15px; font-weight:500; font-size:0.95rem; letter-spacing:0.02em; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px; transition:transform .2s ease;
+  }
+  .enquiry-submit:hover{ transform:translateY(-2px); }
+  .enquiry-note{ font-size:0.78rem; color:var(--ivory); opacity:0.55; margin-top:14px; text-align:center; }
+  .chat-toggle{
+    position:fixed; right:22px; bottom:22px; z-index:700;
+    width:58px; height:58px; border-radius:50%;
+    background:var(--brass); color:var(--charcoal); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px rgba(0,0,0,0.4);
+    transition:transform .25s ease;
+  }
+  .chat-toggle:hover{ transform:scale(1.06); }
+  .chat-toggle svg{ width:26px; height:26px; }
+
+  .chat-panel{
+    position:fixed; right:22px; bottom:92px; z-index:700;
+    width:min(360px, 90vw); height:min(500px, 70vh);
+    background:var(--charcoal); border:1px solid var(--line); border-radius:14px;
+    display:flex; flex-direction:column; overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    transform:translateY(20px) scale(0.97); opacity:0; pointer-events:none;
+    transition:all .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .chat-panel.open{ transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
+  .chat-head{ padding:16px 18px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .chat-head h4{ font-family:'Fraunces',serif; font-size:1.02rem; }
+  .chat-head p{ font-size:0.72rem; color:var(--brass); letter-spacing:0.04em; }
+  .chat-head button{ background:none; border:none; color:var(--offwhite); opacity:0.6; cursor:pointer; font-size:1.1rem; }
+  .chat-body{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .msg{ max-width:85%; padding:10px 13px; border-radius:12px; font-size:0.88rem; line-height:1.45; }
+  .msg.bot{ background:rgba(245,241,232,0.07); align-self:flex-start; border-bottom-left-radius:2px; }
+  .msg.user{ background:var(--brass); color:var(--charcoal); align-self:flex-end; border-bottom-right-radius:2px; }
+  .msg.typing{ opacity:0.6; font-style:italic; }
+  .chat-input{ display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); }
+  .chat-input input{
+    flex:1; background:rgba(245,241,232,0.06); border:1px solid var(--line); border-radius:20px;
+    padding:10px 14px; color:var(--offwhite); font-size:0.88rem; font-family:inherit;
+  }
+  .chat-input input:focus{ outline:none; border-color:var(--brass); }
+  .chat-input button{ background:var(--brass); border:none; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+  .chat-input button svg{ width:16px; height:16px; color:var(--charcoal); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="images/logo.jpg" alt="Spin World Ceiling System logo" draggable="false">
+    <span class="brand-text">SPIN WORLD <span style="color:var(--brass)">CEILING SYSTEM</span></span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="glowzone">
+  <div id="glow"></div>
+  <div class="eyebrow">POP False Ceiling &amp; Cove Design</div>
+  <h1>Ceilings shaped<br>with precision.</h1>
+  <p>Pick a room below, browse our designs, select the ones you like, and send your shortlist to us directly on WhatsApp.</p>
+  <div class="coving-wrap" aria-hidden="true">
+    <svg viewBox="0 0 680 160" fill="none">
+      <path class="coving-line" d="M10 140 C 120 140, 120 40, 220 40 C 260 40, 260 90, 300 90 L 480 90 C 520 90, 520 40, 560 40 C 620 40, 640 100, 670 100" />
+      <path class="coving-line-2" d="M10 150 C 130 150, 130 55, 225 55 C 262 55, 262 100, 300 100 L 480 100 C 518 100, 518 55, 562 55 C 618 55, 636 110, 670 110" />
+    </svg>
+  </div>
+  <div class="scroll-cue"><span class="stick"></span>Scroll</div>
+</section>
+
+<!-- ================= CATEGORY PICKER ================= -->
+<section class="categories" id="gallery">
+  <div class="section-head reveal">
+    <h2>Choose a Room</h2>
+    <span class="tag">Tap to open gallery</span>
+  </div>
+  <p class="section-note reveal">Click on a room to see its designs. Select the ones you like inside — your picks collect at the bottom so you can send them to us in one message.</p>
+  <div class="cat-grid" id="cat-grid"></div>
+</section>
+
+<!-- ================= WHAT WE DO ================= -->
+<section class="what-we-do">
+  <div class="section-head reveal">
+    <h2>What We Do</h2>
+    <span class="tag">Our Work</span>
+  </div>
+  <div class="wwd-grid reveal">
+    <p>
+      Hum residential aur commercial spaces ke liye premium POP false ceiling aur PVC fluted panel installation ki complete service provide karte hain. Hall, bedroom aur kitchen ke liye hum modern POP false ceiling designs, cove light framing aur super-smooth wall finishing tayyar karte hain jo ghar ko ek clean aur classy look deta hai.
+      Iske saath hi hum walls, ceilings aur balcony spaces ke liye modern PVC fluted panels install karte hain. Ye panels living room ke TV unit backdrop, bedroom feature walls aur balcony ke ceiling/wall decoration ke liye best option hain kyunki ye 100% waterproof, termite-proof aur zero-maintenance hote hain. Plain space ko stylish, durable aur premium interior look dena hi hamara main kaam hai.
+    </p>
+    <ul class="wwd-list">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> POP false ceiling design & installation</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Cove & coffer ceiling lighting</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Gypsum board ceilings</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Fluted panel wall & TV unit designs</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Home, office & commercial ceilings</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> On-site consultation & free estimate</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= ENQUIRY FORM ================= -->
+<section class="enquiry">
+  <div class="section-head reveal">
+    <h2>Get a Quick Estimate</h2>
+    <span class="tag">Sent on WhatsApp</span>
+  </div>
+  <p class="section-note reveal">Fill your details and room sizes — it opens WhatsApp with everything filled in, ready to send to us.</p>
+  <div class="enquiry-box reveal">
+    <div class="form-row">
+      <div class="form-field">
+        <label for="enq-name">Your Name</label>
+        <input type="text" id="enq-name" placeholder="e.g. Ramesh Kumar">
+      </div>
+      <div class="form-field">
+        <label for="enq-phone">Your WhatsApp Number</label>
+        <input type="tel" id="enq-phone" placeholder="e.g. 9876543210">
+      </div>
+    </div>
+
+    <label style="display:block; font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--brass); margin-bottom:10px;">Rooms & Sizes</label>
+    <div id="room-list"></div>
+    <button type="button" class="add-room-btn" id="add-room-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Add another room
+    </button>
+
+    <div class="form-row">
+      <div class="form-field" style="grid-column:1/-1;">
+        <label for="enq-budget">Your Budget (approx.)</label>
+        <input type="text" id="enq-budget" placeholder="e.g. ₹50,000 - ₹80,000">
+      </div>
+    </div>
+
+    <button type="button" class="enquiry-submit" id="enquiry-submit">
+      Send Details on WhatsApp
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2 1 2.4c.1.1 1.6 2.5 4 3.5.6.2 1 .4 1.3.5.6.2 1.1.1 1.5.1.5-.1 1.6-.6 1.8-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.2L2 22l4.9-1.3C8.5 21.6 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3C4 14.7 3.6 13.4 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.4-8.4 8.4z"/></svg>
+    </button>
+    <p class="enquiry-note">No account or app needed — this opens a pre-filled WhatsApp message you can review before sending.</p>
+  </div>
+</section>
+<!-- ================= CTA / CONTACT ================= -->
+<section class="cta reveal" id="contact">
+  <h2>Have a design in mind already?</h2>
+  <p>You don't have to pick from the gallery — message us directly and describe your ceiling, room size and budget.</p>
+  <a class="btn" id="direct-whatsapp" href="#" target="_blank" rel="noopener">Message us on WhatsApp →</a>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="f-social" id="f-social"></div>
+  <hr class="f-divider">
+  <div class="f-columns">
+    <div>
+      <h4>Transforming Spaces In</h4>
+      <ul>
+         <li><a href="https://maps.google.com/?q=Telangana" target="_blank">Telangana</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Use Website</h4>
+      <ul>
+        <li>I pad</li>
+        <li>Android</li>
+        <li>iPhone</li>
+        <li>Mac/pc</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Need Help?</h4>
+      <ul><li><a href="https://wa.me/918886587534" target="_blank">Contact Us</a></li></ul>
+    </div>
+  </div>
+  <hr class="f-divider">
+  <div class="f-bottom">
+    <div class="legal">Sitemap | Terms &amp; Privacy Policy</div>
+    <div class="credit">Designed &amp; Developed by <a href="https://wa.me/919158208949" id="credit-link">Sabirrrr Ansari</a></div>
+    <div class="copyright">2026 ©spinworldsystem.in All Rights Reserved.</div>
+  </div>
+</footer>
+
+<!-- ================= GALLERY OVERLAY (built by JS per category) ================= -->
+<div class="overlay" id="overlay">
+  <div class="overlay-head">
+    <div>
+      <h2 id="overlay-title">Hall</h2>
+      <div class="sub" id="overlay-sub">Designs</div>
+    </div>
+    <button class="overlay-close" id="overlay-close" aria-label="Close gallery">&times;</button>
+  </div>
+  <div class="overlay-scroll">
+    <div class="photo-grid" id="overlay-grid"></div>
+  </div>
+</div>
+
+<!-- ================= LIGHTBOX ================= -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close preview">&times;</button>
+  <img id="lightbox-img" src="" alt="Design preview" draggable="false">
+</div>
+
+<!-- ================= SELECTION TRAY ================= -->
+<div class="tray" id="tray">
+  <div class="count"><b id="tray-count">0</b> selected</div>
+  <button class="clear" id="tray-clear" aria-label="Clear selection" title="Clear selection">&times;</button>
+  <button class="send" id="tray-send">
+    Send on WhatsApp
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2 1 2.4c.1.1 1.6 2.5 4 3.5.6.2 1 .4 1.3.5.6.2 1.1.1 1.5.1.5-.1 1.6-.6 1.8-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.2L2 22l4.9-1.3C8.5 21.6 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3C4 14.7 3.6 13.4 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.4-8.4 8.4z"/></svg>
+  </button>
+</div>
+
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const WHATSAPP_NUMBER = "918886587534"; // Spin World Ceiling System
+// "folder" = folder name inside images/, "prefix" = start of each photo's filename,
+// "count" = how many numbered photos are in that room's folder (change freely, can differ per room)
+const CATEGORIES = [
+  { key: "Hall",    label: "Hall",     folder: "hall",    prefix: "hall", count: 42, tagline: "Living & lounge ceilings" },
+  { key: "Bedroom", label: "Bedroom",  folder: "bedroom", prefix: "bed",  count: 68, tagline: "Restful, layered designs" },
+  { key: "TV",      label: "TV Unit",  folder: "tv",      prefix: "tv",   count: 36, tagline: "TV unit ceiling designs" },
+  { key: "Balcony", label: "Balcony",  folder: "balcony", prefix: "cony", count: 21, tagline: "Balcony ceiling designs" },
+  { key: "Wall", label: "Wall Panles",  folder: "wall", prefix: "wall", count: 51, tagline: "Fuluted Wall panle designs" },
+
+];
+
+// Change this to your deployed backend URL once you host the AI agent server
+// (see SETUP-AI-AGENT.txt). While testing on your laptop it stays as below.
+const CHAT_API_URL = "http://localhost:3000/api/chat";
+
+/*
+  HOW TO ADD YOUR OWN PHOTOS
+  ---------------------------
+  1. Put your images in a folder named "images" next to this index.html file.
+  2. Inside "images", make three folders: hall, bedroom, tv
+  3. Name files like: hall-1.jpg, hall-2.jpg ... bed-1.jpg, bed-2.jpg ... tv-1.jpg, tv-2.jpg
+  4. Also add one cover image per room for the home page cards:
+     images/hall/cover.jpg, images/bedroom/cover.jpg, images/tv/cover.jpg
+  5. If a photo is missing, the card just shows a placeholder — nothing breaks.
+*/
+
+const selected = new Map(); // key: "Hall-1" -> {category, index}
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+function openLightbox(src){
+  lightboxImg.src = src;
+  lightbox.classList.add('open');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  setTimeout(() => { lightboxImg.src = ''; }, 300);
+}
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+
+/* ============================================================
+   CATEGORY CARDS (home page)
+   ============================================================ */
+function buildCategoryCards(){
+  const grid = document.getElementById('cat-grid');
+  CATEGORIES.forEach(cat => {
+    const card = document.createElement('div');
+    card.className = 'cat-card reveal';
+    card.tabIndex = 0;
+    card.setAttribute('role','button');
+      const coverSrc = `images/${cat.folder}/cover.jpg`;
+    card.innerHTML = `
+      <img src="${coverSrc}" alt="${cat.label} ceiling designs" draggable="false"
+           onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex';">
+      <div class="shield" oncontextmenu="return false;"></div>
+      <div class="ph-fallback" style="display:none;">No cover photo yet</div>
+      <div class="veil"></div>
+      <div class="cat-body">
+        <h3>${cat.label}</h3>
+        <p>${cat.tagline}</p>
+        <span class="arrow">View designs
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    `;
+    card.addEventListener('click', () => openOverlay(cat));
+    card.addEventListener('keydown', (e) => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openOverlay(cat); } });
+    grid.appendChild(card);
+  });
+}
+
+/* ============================================================
+   GALLERY OVERLAY (opens on category click)
+   ============================================================ */
+const overlay = document.getElementById('overlay');
+const overlayGrid = document.getElementById('overlay-grid');
+const builtCategories = new Set();
+
+function openOverlay(cat){
+  document.getElementById('overlay-title').textContent = cat.label;
+  document.getElementById('overlay-sub').textContent = `${cat.label} Ceiling Designs`;
+  overlayGrid.innerHTML = '';
+  buildPhotoGrid(cat, overlayGrid);
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeOverlay(){
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('overlay-close').addEventListener('click', closeOverlay);
+overlay.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeOverlay(); });
+
+function buildPhotoGrid(cat, container){
+  const category = cat.label;
+  for(let i = 1; i <= cat.count; i++){
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.tabIndex = 0;
+    card.setAttribute('role','button');
+    card.setAttribute('aria-pressed','false');
+    const key = `${category}-${i}`;
+    card.dataset.key = key;
+    card.dataset.category = category;
+    card.dataset.index = i;
+    if(selected.has(key)) card.classList.add('selected');
+
+    const src = `images/${cat.folder}/${cat.prefix}-${i}.jpg`;
+    card.innerHTML = `
+      <img src="${src}" alt="${category} ceiling design ${i}" draggable="false"
+           onerror="this.style.display='none'; this.nextElementSibling.nextElementSibling.style.display='flex';">
+      <div class="shield" oncontextmenu="return false;"></div>
+      <div class="ph-fallback" style="display:none;">
+        <div class="num">${String(i).padStart(2,'0')}</div>
+        <div>Add ${cat.prefix}-${i}.jpg</div>
+      </div>
+      <div class="veil"></div>
+      <button class="eye-btn" aria-label="Preview ${category} design ${i}" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <span class="num-badge">${category} #${i}</span>
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#211F1C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+    `;
+    card.addEventListener('click', () => toggleSelect(card));
+    card.addEventListener('keydown', (e) => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleSelect(card); } });
+    card.querySelector('.eye-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openLightbox(src);
+    });
+    container.appendChild(card);
+  }
+}
+  function toggleSelect(card){
+  const key = card.dataset.key;
+  const isSelected = card.classList.toggle('selected');
+  card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+  if(isSelected){ selected.set(key, {category: card.dataset.category, index: card.dataset.index}); }
+  else{ selected.delete(key); }
+  updateTray();
+}
+function updateTray(){
+  document.getElementById('tray-count').textContent = selected.size;
+  document.getElementById('tray').classList.toggle('show', selected.size > 0);
+}
+function buildWhatsAppMessage(){
+  const grouped = {};
+  selected.forEach(({category, index}) => { (grouped[category] ||= []).push(index); });
+  let lines = ["Hi, I visited your Spin World Ceiling System website and would like these designs:"];
+  Object.keys(grouped).forEach(cat => {
+    const nums = grouped[cat].sort((a,b)=>a-b).map(n => `#${n}`).join(', ');
+    lines.push(`${cat}: ${nums}`);
+  });
+  lines.push("Please share pricing and availability.");
+  return lines.join('\n');
+}
+document.getElementById('tray-send').addEventListener('click', () => {
+  const msg = encodeURIComponent(buildWhatsAppMessage());
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+});
+document.getElementById('tray-clear').addEventListener('click', () => {
+  document.querySelectorAll('.photo-card.selected').forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed','false'); });
+  selected.clear();
+  updateTray();
+});
+document.getElementById('direct-whatsapp').addEventListener('click', (e) => {
+  e.preventDefault();
+  const msg = encodeURIComponent("Hi, I'm interested in a POP false ceiling design for my home. Can we discuss?");
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+});
+// "Contact Us" (footer) and "Sabirrrr Ansari" (credit) now use real href links directly in the HTML,
+// so no JS click handlers are needed for them anymore.
+
+/* ============================================================
+   FOOTER SOCIAL ICONS
+   ============================================================ */
+const SOCIAL_LINKS = {
+  x: "#", youtube: "#", instagram: "#", facebook: "#", google: "#" //# ki jagah apna youtube ya bussiness ya jo bhi hy uska url daalna hy//
+};
+const SOCIAL_ICONS = {
+  x: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22H16.9l-5-6.5-5.7 6.5H2.9l8.1-9.3L2 2h6.6l4.5 6 5.8-6zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20z"/></svg>`,
+  youtube: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#FF0000" d="M23 12s0-3.6-.5-5.3c-.3-1-1-1.7-2-2C18.9 4.2 12 4.2 12 4.2s-6.9 0-8.5.5c-1 .3-1.7 1-2 2C1 8.4 1 12 1 12s0 3.6.5 5.3c.3 1 1 1.7 2 2 1.6.5 8.5.5 8.5.5s6.9 0 8.5-.5c1-.3 1.7-1 2-2 .5-1.7.5-5.3.5-5.3z"/><path fill="#fff" d="M9.8 15.5V8.5l6.4 3.5-6.4 3.5z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" width="18" height="18"><defs><linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FFDD55"/><stop offset="50%" stop-color="#E1306C"/><stop offset="100%" stop-color="#5851DB"/></linearGradient></defs><path fill="url(#igGrad)" d="M12 2.2c3.2 0 3.6 0 4.9.07 3.3.15 4.8 1.7 5 5 .06 1.3.07 1.6.07 4.8s0 3.5-.07 4.8c-.15 3.3-1.7 4.85-5 5-1.3.06-1.6.07-4.9.07s-3.6 0-4.9-.07c-3.3-.15-4.8-1.7-5-5C2 15.5 2 15.2 2 12s0-3.5.07-4.8c.15-3.3 1.7-4.85 5-5C8.4 2.2 8.7 2.2 12 2.2z"/><circle cx="12" cy="12" r="4.5" fill="#211F1C"/><circle cx="12" cy="12" r="3" fill="url(#igGrad)"/><circle cx="17.2" cy="6.8" r="1.1" fill="#211F1C"/></svg>`,
+  facebook: `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#1877F2" d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>`,
+  google: `<svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.6c-2 1.4-4.6 2.3-7.6 2.3-5.3 0-9.7-3.1-11.3-7.9l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C41.5 36.6 44 30.9 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>`,
+};
+const socialWrap = document.getElementById('f-social');
+Object.keys(SOCIAL_ICONS).forEach(key => {
+  const a = document.createElement('a');
+  a.href = SOCIAL_LINKS[key];
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.setAttribute('aria-label', key);
+  a.innerHTML = SOCIAL_ICONS[key];
+  socialWrap.appendChild(a);
+});
+
+/* ============================================================
+   BASIC CONTENT PROTECTION (deterrents only — see note in chat)
+   ============================================================ */
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+document.addEventListener('dragstart', (e) => e.preventDefault());
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  const blockCombo =
+    e.key === 'F12' ||
+    (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) ||
+    (e.ctrlKey && k === 'u') ||
+    (e.ctrlKey && k === 's');
+  if(blockCombo) e.preventDefault();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+buildCategoryCards();
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); } });
+}, {threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+setTimeout(() => document.querySelectorAll('.reveal').forEach(el => io.observe(el)), 50);
+
+const glowzone = document.getElementById('glowzone');
+glowzone.addEventListener('mousemove', (e) => {
+  const rect = glowzone.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  document.getElementById('glow').style.setProperty('--gx', x + '%');
+  document.getElementById('glow').style.setProperty('--gy', y + '%');
+});
+
+
+/* ============================================================
+   ENQUIRY FORM — dynamic room rows + WhatsApp submit
+   ============================================================ */
+const roomList = document.getElementById('room-list');
+let roomRowCount = 0;
+
+function addRoomRow(){
+  roomRowCount++;
+  const row = document.createElement('div');
+  row.className = 'room-row';
+  row.innerHTML = `
+    <div class="form-field">
+      <label>Room ${roomRowCount} Type</label>
+      <input type="text" class="room-type" placeholder="e.g. Hall, Bedroom">
+    </div>
+    <div class="form-field">
+      <label>Size (ft)</label>
+      <input type="text" class="room-size" placeholder="e.g. 21x12">
+    </div>
+    <button type="button" class="remove-room" aria-label="Remove this room">&times;</button>
+  `;
+  row.querySelector('.remove-room').addEventListener('click', () => row.remove());
+  roomList.appendChild(row);
+}
+document.getElementById('add-room-btn').addEventListener('click', addRoomRow);
+addRoomRow(); // start with one row
+
+function buildEnquiryMessage(){
+  const name = document.getElementById('enq-name').value.trim();
+  const phone = document.getElementById('enq-phone').value.trim();
+  const budget = document.getElementById('enq-budget').value.trim();
+  const rows = [...roomList.querySelectorAll('.room-row')].map((row, idx) => {
+    const type = row.querySelector('.room-type').value.trim();
+    const size = row.querySelector('.room-size').value.trim();
+    if(!type && !size) return null;
+    return `${idx + 1}. ${type || 'Room'} — ${size || 'size not given'}`;
+  }).filter(Boolean);
+
+  let lines = ["Hi, I'd like a POP ceiling estimate from Spin World Ceiling System."];
+  if(name) lines.push(`Name: ${name}`);
+  if(phone) lines.push(`Contact: ${phone}`);
+  if(rows.length){ lines.push('Rooms:'); lines.push(...rows); }
+  if(budget) lines.push(`Budget: ${budget}`);
+  return lines.join('\n');
+}
+
+document.getElementById('enquiry-submit').addEventListener('click', () => {
+  const name = document.getElementById('enq-name').value.trim();
+  const phone = document.getElementById('enq-phone').value.trim();
+  if(!name || !phone){
+    alert('Please enter your name and WhatsApp number.');
+    return;
+  }
+  const msg = encodeURIComponent(buildEnquiryMessage());
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+});
+</script>
+</body>
+</html>
