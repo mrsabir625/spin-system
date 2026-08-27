@@ -1,8 +1,5 @@
 {
-    "cleanUrls": true,
-    "routes": [
-        { "hamdle": "filesystem"},
-        { "src": "/(.*)", "dest": "/index.html" }
-    
-   ]
+    "rewrites": [
+        { "source": "/(.*)", "destination": "/index.html" }
+    ]
 }
