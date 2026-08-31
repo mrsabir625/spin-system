@@ -1,0 +1,16 @@
+{
+  "name": "spin-world-admin-panel",
+  "version": "1.0.0",
+  "description": "Website + admin panel server for Spin World Ceiling System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ua-parser-js": "^1.0.38",
+    "google-auth-library": "^9.11.0"
+  }
+}
