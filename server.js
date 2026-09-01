@@ -24,35 +24,95 @@ app.use(cookieParser());
 /* ============================================================
    DATABASE CONNECTION & MODELS
    ============================================================ */
-let isConnected = false;
-async function connectDB() {
-  if (isConnected || !MONGODB_URI) return;
-  try {
-    const db = await mongoose.connect(MONGODB_URI);
-    isConnected = db.connections[0].readyState === 1;
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-  }
+/* ============================================================
+   DATABASE CONNECTION (Cached for Serverless)
+   ============================================================ */
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
-connectDB();
 
-const VisitSchema = new mongoose.Schema({
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+  if (!MONGODB_URI) return null;
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000 // 5 sec me timeout ho jaye agar connection issue ho
+    };
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => mongoose);
+  }
+  
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error('MongoDB connection error:', e);
+  }
+  return cached.conn;
+}
+
+// Database Models
+const visitSchema = new mongoose.Schema({
   ip: String,
   path: String,
   device: String,
   deviceType: String,
   browser: String,
   os: String,
-  time: { type: Date, default: Date.now }
+  time: Date
 });
 
-const BlockedIPSchema = new mongoose.Schema({
+const blockedIPSchema = new mongoose.Schema({
   ip: { type: String, unique: true },
-  blockedAt: { type: Date, default: Date.now }
+  blockedAt: Date
 });
 
-const Visit = mongoose.models.Visit || mongoose.model('Visit', VisitSchema);
-const BlockedIP = mongoose.models.BlockedIP || mongoose.model('BlockedIP', BlockedIPSchema);
+const Visit = mongoose.model('Visit', visitSchema);
+const BlockedIP = mongoose.model('BlockedIP', blockedIPSchema);
+
+// Background visitor logging (Website load ko block nahi karega)
+function logVisitBackground(req) {
+  connectDB().then(async () => {
+    try {
+      const ua = new UAParser(req.headers['user-agent']);
+      const result = ua.getResult();
+      
+      const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip || '';
+      const clientIp = rawIp.split(',')[0].trim();
+
+      await Visit.create({
+        ip: clientIp || 'Unknown IP',
+        path: req.path || '/',
+        device: result.device.model || result.device.vendor || 'Desktop/Laptop',
+        deviceType: result.device.type || 'desktop',
+        browser: result.browser.name || 'Unknown',
+        os: result.os.name || 'Unknown',
+        time: new Date()
+      });
+    } catch (err) {
+      console.error('Log error:', err);
+    }
+  }).catch(() => {});
+}
+
+/* ============================================================
+   MIDDLEWARE (Fast-Pass)
+   ============================================================ */
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/admin') || req.path.startsWith('/api')) {
+    return next();
+  }
+
+  // Background me log karein taaki page instant khule
+  const isPageView = req.path === '/' || req.path.endsWith('.html') || !path.extname(req.path);
+  if (isPageView) {
+    logVisitBackground(req);
+  }
+  
+  next();
+});
 
 /* ============================================================
    LOGGING & BLOCK MIDDLEWARE
@@ -110,9 +170,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-/* ============================================================
-   ADMIN AUTH (STATELESS SIGNED TOKEN)
-   ============================================================ */
+
 /* ============================================================
    ADMIN AUTH — Robust Stateless Session
    ============================================================ */
