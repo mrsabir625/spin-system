@@ -57,30 +57,23 @@ const BlockedIP = mongoose.models.BlockedIP || mongoose.model('BlockedIP', Block
 /* ============================================================
    LOGGING & BLOCK MIDDLEWARE
    ============================================================ */
-function getClientIp(req) {
-  const rawIp = [
-    req.headers['x-forwarded-for'],
-    req.socket && req.socket.remoteAddress,
-    req.ip
-  ].filter(Boolean).join(',');
-
-  return rawIp.split(',')[0].trim();
-}
-
 async function logVisit(req) {
   try {
     await connectDB();
     const ua = new UAParser(req.headers['user-agent']);
     const result = ua.getResult();
-    const clientIp = getClientIp(req);
+    
+    const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip || '';
+    const clientIp = rawIp.split(',')[0].trim();
 
     await Visit.create({
-      ip: clientIp,
-      path: req.path,
-      device: `${result.device.model || ''}${result.device.vendor || ''} Desktop/Laptop`,
+      ip: clientIp || 'Unknown IP',
+      path: req.path || '/',
+      device: result.device.model || result.device.vendor || 'Desktop/Laptop',
       deviceType: result.device.type || 'desktop',
       browser: result.browser.name || 'Unknown',
-      os: result.os.name || 'Unknown'
+      os: result.os.name || 'Unknown',
+      time: new Date()
     });
   } catch (e) {
     console.error('Visit log error:', e);
@@ -88,29 +81,35 @@ async function logVisit(req) {
 }
 
 app.use(async (req, res, next) => {
+  // Admin aur static assets (css, js, images) ko skip karein
   if (req.path.startsWith('/admin') || req.path.startsWith('/api')) return next();
 
   await connectDB();
-  const clientIp = getClientIp(req);
+  const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip || '';
+  const clientIp = rawIp.split(',')[0].trim();
 
   const isBlocked = await BlockedIP.findOne({ ip: clientIp });
   if (isBlocked) {
-    return res.status(403).send(`
-      <div style="font-family:sans-serif;text-align:center;padding:80px 20px;">
-        <h2>Access Blocked</h2>
-        <p>You have been blocked from viewing this site.</p>
-      </div>
-    `);
+    return res.status(403).send(
+      '<div style="font-family:sans-serif;text-align:center;padding:80px 20px;"><h2>Access Blocked</h2><p>You have been blocked from viewing this site.</p></div>'
+    );
   }
 
-  if (req.path === '/' || req.path.endsWith('.html')) {
-    logVisit(req);
+  // Sirf page views record karein aur await lagayein taaki container band hone se pehle DB me save ho jaye
+  const isPageView = req.path === '/' || req.path.endsWith('.html') || !path.extname(req.path);
+  if (isPageView) {
+    await logVisit(req);
   }
   next();
 });
 
+// Static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Explicit route for homepage taaki middleware miss na ho
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 /* ============================================================
    ADMIN AUTH (STATELESS SIGNED TOKEN)
    ============================================================ */
@@ -129,7 +128,6 @@ function verifySignedToken(token) {
   if (Date.now() > Number(expiry)) return false;
   if (email !== ADMIN_EMAIL) return false;
   const expectedHmac = crypto.createHmac('sha256', SESSION_SECRET).update(`${email}:${expiry}`).digest('hex');
-  if (hmac.length !== expectedHmac.length) return false;
   return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(expectedHmac));
 }
 
@@ -199,10 +197,9 @@ app.post('/api/admin/block', requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/api/admin/unblock', requireAdmin, async (_req, res) => {
+app.post('/api/admin/unblock', requireAdmin, async (req, res) => {
   await connectDB();
-  const { ip } = _req.body;
-  if (!ip) return res.status(400).json({ error: 'ip required' });
+  const { ip } = req.body;
   await BlockedIP.deleteOne({ ip });
   res.json({ ok: true });
 });
