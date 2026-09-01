@@ -113,22 +113,35 @@ app.get('/', (req, res) => {
 /* ============================================================
    ADMIN AUTH (STATELESS SIGNED TOKEN)
    ============================================================ */
+/* ============================================================
+   ADMIN AUTH — Robust Stateless Session
+   ============================================================ */
 function makeSignedToken(email) {
-  const expiry = Date.now() + 12 * 60 * 60 * 1000;
-  const payload = `${email}:${expiry}`;
-  const hmac = crypto.createHmac('sha256', SESSION_SECRET).update(payload).digest('hex');
-  return `${payload}:${hmac}`;
+  const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  const rawData = JSON.stringify({ email, expiry });
+  const base64Data = Buffer.from(rawData).toString('base64');
+  const signature = crypto.createHmac('sha256', SESSION_SECRET).update(base64Data).digest('hex');
+  return `${base64Data}.${signature}`;
 }
 
 function verifySignedToken(token) {
-  if (!token) return false;
-  const parts = token.split(':');
-  if (parts.length !== 3) return false;
-  const [email, expiry, hmac] = parts;
-  if (Date.now() > Number(expiry)) return false;
-  if (email !== ADMIN_EMAIL) return false;
-  const expectedHmac = crypto.createHmac('sha256', SESSION_SECRET).update(`${email}:${expiry}`).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(expectedHmac));
+  if (!token || typeof token !== 'string') return false;
+  const parts = token.split('.');
+  if (parts.length !== 2) return false;
+
+  const [base64Data, signature] = parts;
+  const expectedSignature = crypto.createHmac('sha256', SESSION_SECRET).update(base64Data).digest('hex');
+
+  if (signature !== expectedSignature) return false;
+
+  try {
+    const data = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf8'));
+    if (Date.now() > data.expiry) return false;
+    if (data.email.toLowerCase().trim() !== ADMIN_EMAIL) return false;
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function requireAdmin(req, res, next) {
@@ -152,20 +165,25 @@ app.post('/api/auth/google', async (req, res) => {
     }
 
     const token = makeSignedToken(email);
+    
+    // Explicit path '/' taaki ye cookie /api aur /admin dono jagah accessible ho
     res.cookie('admin_session', token, {
+      path: '/',
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
-      maxAge: 12 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000
     });
+    
     res.json({ ok: true });
   } catch (err) {
+    console.error('Auth error:', err);
     res.status(401).json({ error: 'Google verification failed.' });
   }
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('admin_session', { httpOnly: true, secure: true, sameSite: 'lax' });
+  res.clearCookie('admin_session', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
   res.json({ ok: true });
 });
 
