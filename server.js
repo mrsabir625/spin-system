@@ -86,16 +86,34 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 /* ============================================================
-   ADMIN AUTH — Google Sign-In restricted to ADMIN_EMAIL
+   ADMIN AUTH — Stateless Signed Session (Vercel Serverless Ready)
    ============================================================ */
-function makeSessionToken() {
-  return crypto.randomBytes(32).toString('hex');
+
+// Helper to create a signed token
+function makeSignedToken(email) {
+  const expiry = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
+  const payload = `${email}:${expiry}`;
+  const hmac = crypto.createHmac('sha256', SESSION_SECRET).update(payload).digest('hex');
+  return `${payload}:${hmac}`;
 }
-const activeSessions = new Set(); // simple in-memory session store
+
+// Helper to verify the signed token
+function verifySignedToken(token) {
+  if (!token) return false;
+  const parts = token.split(':');
+  if (parts.length !== 3) return false;
+  
+  const [email, expiry, hmac] = parts;
+  if (Date.now() > Number(expiry)) return false; // Expired
+  if (email !== ADMIN_EMAIL) return false;
+
+  const expectedHmac = crypto.createHmac('sha256', SESSION_SECRET).update(`${email}:${expiry}`).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(expectedHmac));
+}
 
 function requireAdmin(req, res, next) {
   const token = req.cookies.admin_session;
-  if (token && activeSessions.has(token)) return next();
+  if (verifySignedToken(token)) return next();
   return res.status(401).json({ error: 'Not authenticated' });
 }
 
@@ -113,10 +131,10 @@ app.post('/api/auth/google', async (req, res) => {
       return res.status(403).json({ error: 'This Google account is not authorized.' });
     }
 
-    const token = makeSessionToken();
-    activeSessions.add(token);
+    const token = makeSignedToken(email);
     res.cookie('admin_session', token, {
       httpOnly: true,
+      secure: true,      // Required for HTTPS / Vercel
       sameSite: 'lax',
       maxAge: 12 * 60 * 60 * 1000 // 12 hours
     });
@@ -128,14 +146,17 @@ app.post('/api/auth/google', async (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  activeSessions.delete(req.cookies.admin_session);
-  res.clearCookie('admin_session');
+  res.clearCookie('admin_session', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax'
+  });
   res.json({ ok: true });
 });
 
 app.get('/api/auth/status', (req, res) => {
   const token = req.cookies.admin_session;
-  res.json({ authenticated: !!(token && activeSessions.has(token)) });
+  res.json({ authenticated: verifySignedToken(token) });
 });
 
 /* ============================================================
