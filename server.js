@@ -90,14 +90,14 @@ async function logVisitorData(req) {
 }
 
 // Fast Middleware (Never blocks response)
-app.use(async (s, next) => {
+app.use(async (req, res, next) => {
   if (req.path.startsWith('/admin') || req.path.startsWith('/api')) {
     return next();
   }
 
   const isPageView = req.path === '/' || req.path.endsWith('.html') || !path.extname(req.path);
   if (isPageView) {
-   await logisitorData(req);
+   await logVisitorData(req);
   }
   next();
 });
