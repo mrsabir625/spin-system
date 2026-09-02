@@ -101,12 +101,12 @@ app.use(async (req, res, next) => {
     const clientIp = rawIp.split(',')[0].trim();
     const isBlocked = await BlockedIP.findOne({ ip: clientIp });
     if (isBlocked) {
-      return res.status(403).send(
+      return res.status(403).send(`
         <div style="font-family:sans-serif;text-align:center;padding:80px 20px;background:#111;color:#eee;">
           <h2>Access Blocked</h2>
           <p>You have been blocked from viewing this site.</p>
         </div>
-      );
+     `);
     }
   } catch (e) {
     // agar DB check fail ho jaye, galti se kisi ko block mat karo
