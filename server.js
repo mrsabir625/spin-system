@@ -11,7 +11,7 @@ const app = express();
 app.set('trust proxy', true);
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'change_this_secret';
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -144,7 +144,7 @@ function verifySignedToken(token) {
  try {
     const data = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf8'));
     if (Date.now() > data.expiry) return false;
-    if (data.email.toLowerCase().trim() !== ADMIN_EMAIL) return false;
+    if (!ADMIN_EMAIL.includes((data.email || '').toLowerCase().trim())) return false;
     return true;
   } catch {
     return false;
@@ -167,7 +167,7 @@ app.post('/api/auth/google', async (req, res) => {
     const payload = ticket.getPayload();
     const email = (payload.email || '').toLowerCase().trim();
 
-    if (!payload.email_verified || email !== ADMIN_EMAIL) {
+    if (!payload.email_verified || !ADMIN_EMAIL.includes(email)) {
       return res.status(403).json({ error: 'This Google account is not authorized.' });
     }
 
