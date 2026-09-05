@@ -49,6 +49,31 @@
 
   .empty{ opacity:0.5; font-size:0.85rem; padding:16px 0; }
   .refresh-note{ font-size:0.75rem; opacity:0.5; margin-top:8px; }
+
+  .ip-clickable{ cursor:pointer; }
+  .ip-highlight{ font-weight:700; color:var(--brass); }
+
+  .upload-box{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:18px; }
+  select, input[type="file"]{
+    background:rgba(245,241,232,0.06); border:1px solid var(--line); color:var(--offwhite);
+    padding:9px 12px; border-radius:8px; font-size:0.85rem; font-family:inherit;
+  }
+  .btn-upload{ background:var(--brass); color:var(--charcoal); }
+  .upload-status{ font-size:0.8rem; opacity:0.75; margin-bottom:16px; min-height:1.2em; }
+
+  .photo-grid-admin{ display:grid; grid-template-columns:repeat(auto-fill, minmax(110px,1fr)); gap:10px; }
+  .photo-thumb{ position:relative; aspect-ratio:1; border-radius:6px; overflow:hidden; border:1px solid var(--line); }
+  .photo-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-thumb button{
+    position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none;
+    width:22px; height:22px; border-radius:50%; cursor:pointer; font-size:0.75rem; line-height:1;
+  }
+
+  .chart-wrap{ display:flex; align-items:flex-end; gap:6px; height:140px; padding-top:10px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .bar{ width:100%; background:var(--brass); border-radius:3px 3px 0 0; min-height:2px; transition:height .3s ease; }
+  .bar-label{ font-size:0.62rem; opacity:0.6; white-space:nowrap; transform:rotate(-40deg); transform-origin:top left; margin-top:4px; }
+  .bar-count{ font-size:0.68rem; color:var(--brass); }
 </style>
 </head>
 <body>
@@ -71,6 +96,28 @@
     <div class="stat-card"><div class="num" id="stat-unique">0</div><div class="label">Unique IPs</div></div>
     <div class="stat-card"><div class="num" id="stat-blocked">0</div><div class="label">Blocked IPs</div></div>
   </div>
+
+  <section>
+    <h2>Daily Visits (last 14 days)</h2>
+    <div class="chart-wrap" id="chart-wrap"></div>
+  </section>
+
+  <section>
+    <h2>Upload Photos</h2>
+    <div class="upload-box">
+      <select id="upload-category">
+        <option value="hall">Hall</option>
+        <option value="bedroom">Bedroom</option>
+        <option value="tv">TV Unit</option>
+        <option value="balcony">Balcony</option>
+        <option value="wall">Wall Panels</option>
+      </select>
+      <input type="file" id="upload-files" accept="image/*" multiple>
+      <button class="btn btn-upload" id="upload-btn">Upload</button>
+    </div>
+    <p class="upload-status" id="upload-status"></p>
+    <div class="photo-grid-admin" id="photo-grid-admin"></div>
+  </section>
 
   <section>
     <h2>Live Visitors</h2>
@@ -102,6 +149,7 @@ function showDashboard(){
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   loadData();
+  loadCategoryPhotos();
   setInterval(loadData, 5000);
 }
 function showLogin(errorText){
@@ -144,9 +192,10 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 });
 
 async function loadData(){
-  const [visitorsRes, blockedRes] = await Promise.all([
+  const [visitorsRes, blockedRes, dailyRes] = await Promise.all([
     fetch('/api/admin/visitors'),
-    fetch('/api/admin/blocked')
+    fetch('/api/admin/blocked'),
+    fetch('/api/admin/stats/daily')
   ]);
   if(!visitorsRes.ok || !blockedRes.ok){ showLogin('Session expired, please sign in again.'); return; }
   const visitors = await visitorsRes.json();
@@ -157,16 +206,21 @@ async function loadData(){
   document.getElementById('stat-total').textContent = visitors.length;
   document.getElementById('stat-unique').textContent = new Set(visitors.map(v => v.ip)).size;
   document.getElementById('stat-blocked').textContent = blocked.length;
+
+  if(dailyRes.ok){ renderDailyChart(await dailyRes.json()); }
 }
+
+// IPs the admin has clicked to highlight — stays highlighted across auto-refreshes
+const highlightedIps = new Set();
 
 function renderVisitors(visitors, blocked){
   const body = document.getElementById('visitors-body');
   const blockedIps = new Set(blocked.map(b => b.ip));
   if(!visitors.length){ body.innerHTML = '<tr><td colspan="7" class="empty">No visits logged yet.</td></tr>'; return; }
   body.innerHTML = visitors.map(v => `
-    <tr>
+    <tr class="${highlightedIps.has(v.ip) ? 'ip-highlight' : ''}">
       <td>${new Date(v.time).toLocaleString()}</td>
-      <td>${v.ip}</td>
+      <td class="ip-clickable" onclick="toggleIpHighlight('${v.ip}')">${v.ip}</td>
       <td>${v.device} (${v.deviceType})</td>
       <td>${v.browser}</td>
       <td>${v.os}</td>
@@ -176,6 +230,28 @@ function renderVisitors(visitors, blocked){
         : `<button class="btn btn-block" onclick="blockIp('${v.ip}')">Block</button>`}</td>
     </tr>
   `).join('');
+}
+
+function toggleIpHighlight(ip){
+  if(highlightedIps.has(ip)) highlightedIps.delete(ip);
+  else highlightedIps.add(ip);
+  loadData();
+}
+
+function renderDailyChart(days){
+  const wrap = document.getElementById('chart-wrap');
+  const max = Math.max(1, ...days.map(d => d.count));
+  wrap.innerHTML = days.map(d => {
+    const heightPct = Math.max(2, (d.count / max) * 100);
+    const shortDate = d.date.slice(5).replace('-', '/'); // MM/DD
+    return `
+      <div class="bar-col">
+        <span class="bar-count">${d.count || ''}</span>
+        <div class="bar" style="height:${heightPct}%"></div>
+        <span class="bar-label">${shortDate}</span>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderBlocked(blocked){
@@ -188,6 +264,62 @@ function renderBlocked(blocked){
       <td><button class="btn btn-unblock" onclick="unblockIp('${b.ip}')">Unblock</button></td>
     </tr>
   `).join('');
+}
+
+/* ============================================================
+   PHOTO UPLOAD
+   ============================================================ */
+const uploadCategorySelect = document.getElementById('upload-category');
+const uploadStatus = document.getElementById('upload-status');
+
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  const category = uploadCategorySelect.value;
+  const filesInput = document.getElementById('upload-files');
+  const files = filesInput.files;
+  if(!files || !files.length){ uploadStatus.textContent = 'Pehle photos choose karo.'; return; }
+
+  const formData = new FormData();
+  formData.append('category', category);
+  for(const f of files) formData.append('photos', f);
+
+  uploadStatus.textContent = `Uploading ${files.length} photo(s)...`;
+  try{
+    const res = await fetch('/api/admin/photos/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if(!res.ok){ uploadStatus.textContent = data.error || 'Upload failed.'; return; }
+    uploadStatus.textContent = `${data.uploaded} photo(s) uploaded successfully${data.failed ? `, ${data.failed} failed` : ''}.`;
+    filesInput.value = '';
+    loadCategoryPhotos();
+  } catch(err){
+    uploadStatus.textContent = 'Upload failed. Check your internet connection and try again.';
+  }
+});
+
+uploadCategorySelect.addEventListener('change', loadCategoryPhotos);
+
+async function loadCategoryPhotos(){
+  const category = uploadCategorySelect.value;
+  const grid = document.getElementById('photo-grid-admin');
+  grid.innerHTML = '<p class="empty">Loading...</p>';
+  try{
+    const res = await fetch(`/api/admin/photos/${category}`);
+    const photos = await res.json();
+    if(!photos.length){ grid.innerHTML = '<p class="empty">No uploaded photos in this category yet.</p>'; return; }
+    grid.innerHTML = photos.map(p => `
+      <div class="photo-thumb">
+        <img src="/api/photos/image/${p._id}" alt="" loading="lazy">
+        <button onclick="deletePhoto('${p._id}')" aria-label="Delete photo">&times;</button>
+      </div>
+    `).join('');
+  } catch(err){
+    grid.innerHTML = '<p class="empty">Could not load photos.</p>';
+  }
+}
+
+async function deletePhoto(id){
+  if(!confirm('Delete this photo? This cannot be undone.')) return;
+  await fetch(`/api/admin/photos/${id}`, { method: 'DELETE' });
+  loadCategoryPhotos();
 }
 
 async function blockIp(ip){

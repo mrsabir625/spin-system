@@ -570,13 +570,57 @@ const overlay = document.getElementById('overlay');
 const overlayGrid = document.getElementById('overlay-grid');
 const builtCategories = new Set();
 
-function openOverlay(cat){
+async function openOverlay(cat){
   document.getElementById('overlay-title').textContent = cat.label;
   document.getElementById('overlay-sub').textContent = `${cat.label} Ceiling Designs`;
   overlayGrid.innerHTML = '';
   buildPhotoGrid(cat, overlayGrid);
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+  await appendUploadedPhotos(cat, overlayGrid);
+}
+
+// Fetches any photos uploaded through the admin panel and adds them to the grid,
+// continuing the numbering after the fixed/static photos.
+async function appendUploadedPhotos(cat, container){
+  try{
+    const res = await fetch(`/api/photos/${cat.folder}`);
+    if(!res.ok) return;
+    const urls = await res.json();
+    urls.forEach((url, idx) => {
+      const i = cat.count + idx + 1;
+      const category = cat.label;
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.tabIndex = 0;
+      card.setAttribute('role','button');
+      card.setAttribute('aria-pressed','false');
+      const key = `${category}-${i}`;
+      card.dataset.key = key;
+      card.dataset.category = category;
+      card.dataset.index = i;
+      if(selected.has(key)) card.classList.add('selected');
+
+      card.innerHTML = `
+        <img src="${url}" alt="${category} ceiling design ${i}" draggable="false">
+        <div class="shield" oncontextmenu="return false;"></div>
+        <div class="veil"></div>
+        <button class="eye-btn" aria-label="Preview ${category} design ${i}" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <span class="num-badge">${category} #${i}</span>
+        <div class="check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#211F1C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      `;
+      card.addEventListener('click', () => toggleSelect(card));
+      card.addEventListener('keydown', (e) => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleSelect(card); } });
+      card.querySelector('.eye-btn').addEventListener('click', (e) => { e.stopPropagation(); openLightbox(url); });
+      container.appendChild(card);
+    });
+  } catch(e){
+    // agar upload wali photos load na ho paye, static photos to already dikh rahi hain — site kaam karti rahegi
+  }
 }
 function closeOverlay(){
   overlay.classList.remove('open');
