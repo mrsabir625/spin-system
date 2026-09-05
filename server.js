@@ -1,4 +1,4 @@
- require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const { UAParser } = require('ua-parser-js');
 const { OAuth2Client } = require('google-auth-library');
 const mongoose = require('mongoose');
+const multer = require('multer');
 
 const app = express();
 app.set('trust proxy', true);
@@ -17,6 +18,21 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'change_this_secret';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// Allowed photo categories — must match the "folder" values used in public/index.html's CATEGORIES list
+const ALLOWED_CATEGORIES = ['hall', 'bedroom', 'tv', 'balcony', 'wall'];
+
+// Photos are stored directly inside MongoDB (no third-party image service needed).
+// Keep per-photo size small so a single photo document stays well under MongoDB's 16MB document limit.
+const MAX_PHOTO_SIZE = 3 * 1024 * 1024; // 3MB per photo
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_PHOTO_SIZE, files: 20 }, // max 20 photos per upload batch
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) return cb(new Error('Only image files are allowed'));
+    cb(null, true);
+  }
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -34,8 +50,8 @@ async function connectDB() {
 
   try {
     cachedConn = await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 2500, // Timeout fast taaki page na ruke
-      connectTimeoutMS: 2500
+      serverSelectionTimeoutMS: 8000, // Timeout fast taaki page na ruke
+      connectTimeoutMS: 8000
     });
     return cachedConn;
   } catch (err) {
@@ -59,8 +75,16 @@ const BlockedIPSchema = new mongoose.Schema({
   blockedAt: { type: Date, default: Date.now }
 });
 
+const PhotoSchema = new mongoose.Schema({
+  category: { type: String, index: true }, // e.g. "hall", "bedroom" — matches CATEGORIES[].folder on the site
+  data: Buffer,        // the actual photo bytes, stored directly in MongoDB
+  contentType: String, // e.g. "image/jpeg"
+  uploadedAt: { type: Date, default: Date.now }
+});
+
 const Visit = mongoose.models.Visit || mongoose.model('Visit', VisitSchema);
 const BlockedIP = mongoose.models.BlockedIP || mongoose.model('BlockedIP', BlockedIPSchema);
+const Photo = mongoose.models.Photo || mongoose.model('Photo', PhotoSchema);
 
 /* ============================================================
    VISITOR LOGGING
@@ -238,6 +262,131 @@ app.post('/api/admin/unblock', requireAdmin, async (req, res) => {
     res.json({ ok: true });
   } catch {
     res.status(500).json({ error: 'DB error' });
+  }
+});
+
+/* ============================================================
+   PHOTO UPLOAD — stored directly in MongoDB, no third-party service
+   ============================================================ */
+app.post('/api/admin/photos/upload', requireAdmin, (req, res) => {
+  upload.array('photos', 20)(req, res, async (err) => {
+    if (err) {
+      // multer errors (file too big, too many files, wrong type) land here — respond cleanly instead of crashing
+      const msg = err.code === 'LIMIT_FILE_SIZE'
+        ? `Each photo must be under ${MAX_PHOTO_SIZE / (1024 * 1024)}MB.`
+        : (err.message || 'Upload failed.');
+      return res.status(400).json({ error: msg });
+    }
+
+    try {
+      const category = (req.body.category || '').toLowerCase().trim();
+      if (!ALLOWED_CATEGORIES.includes(category)) {
+        return res.status(400).json({ error: 'Invalid category' });
+      }
+      if (!req.files || !req.files.length) {
+        return res.status(400).json({ error: 'No files received' });
+      }
+
+      const db = await connectDB();
+      if (!db) return res.status(503).json({ error: 'Database not reachable right now. Try again in a moment.' });
+
+      const saved = [];
+      for (const file of req.files) {
+        const doc = await Photo.create({
+          category,
+          data: file.buffer,
+          contentType: file.mimetype
+        });
+        saved.push({ _id: doc._id, category: doc.category, uploadedAt: doc.uploadedAt });
+      }
+
+      res.json({ ok: true, uploaded: saved.length, photos: saved });
+    } catch (err) {
+      console.error('Upload error:', err.message);
+      res.status(500).json({ error: 'Upload failed. Please try again.' });
+    }
+  });
+});
+
+app.get('/api/admin/photos/:category', requireAdmin, async (req, res) => {
+  try {
+    await connectDB();
+    const category = (req.params.category || '').toLowerCase().trim();
+    const photos = await Photo.find({ category }).sort({ uploadedAt: -1 }).select('_id uploadedAt');
+    res.json(photos);
+  } catch {
+    res.json([]);
+  }
+});
+
+app.delete('/api/admin/photos/:id', requireAdmin, async (req, res) => {
+  try {
+    await connectDB();
+    await Photo.deleteOne({ _id: req.params.id });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Delete failed' });
+  }
+});
+
+/* ============================================================
+   PUBLIC PHOTOS API — used by the website to show uploaded photos
+   ============================================================ */
+app.get('/api/photos/:category', async (req, res) => {
+  try {
+    await connectDB();
+    const category = (req.params.category || '').toLowerCase().trim();
+    if (!ALLOWED_CATEGORIES.includes(category)) return res.json([]);
+    const photos = await Photo.find({ category }).sort({ uploadedAt: -1 }).select('_id');
+    res.json(photos.map(p => `/api/photos/image/${p._id}`));
+  } catch {
+    res.json([]);
+  }
+});
+
+// Serves the actual image bytes for a single uploaded photo (used as <img src="...">)
+app.get('/api/photos/image/:id', async (req, res) => {
+  try {
+    await connectDB();
+    const photo = await Photo.findById(req.params.id);
+    if (!photo || !photo.data) return res.status(404).end();
+    res.set('Content-Type', photo.contentType || 'image/jpeg');
+    res.set('Cache-Control', 'public, max-age=604800'); // cache for 7 days — reduces load on the DB
+    res.send(photo.data);
+  } catch {
+    res.status(404).end();
+  }
+});
+
+/* ============================================================
+   DAILY VISITS STATS (for the admin dashboard graph)
+   ============================================================ */
+app.get('/api/admin/stats/daily', requireAdmin, async (req, res) => {
+  try {
+    await connectDB();
+    const since = new Date();
+    since.setDate(since.getDate() - 13); // last 14 days
+    since.setHours(0, 0, 0, 0);
+
+    const raw = await Visit.aggregate([
+      { $match: { time: { $gte: since } } },
+      { $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$time' } },
+          count: { $sum: 1 }
+      } }
+    ]);
+    const byDate = Object.fromEntries(raw.map(r => [r._id, r.count]));
+
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      days.push({ date: key, count: byDate[key] || 0 });
+    }
+    res.json(days);
+  } catch {
+    res.json([]);
   }
 });
 
