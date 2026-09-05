@@ -7,6 +7,7 @@ const { UAParser } = require('ua-parser-js');
 const { OAuth2Client } = require('google-auth-library');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const sharp = require('sharp');
 
 const app = express();
 app.set('trust proxy', true);
@@ -24,7 +25,7 @@ const ALLOWED_CATEGORIES = ['hall', 'bedroom', 'tv', 'balcony', 'wall'];
 
 // Photos are stored directly inside MongoDB (no third-party image service needed).
 // Keep per-photo size small so a single photo document stays well under MongoDB's 16MB document limit.
-const MAX_PHOTO_SIZE = 3 * 1024 * 1024; // 3MB per photo
+const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB per photo
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_PHOTO_SIZE, files: 20 }, // max 20 photos per upload batch
@@ -292,10 +293,17 @@ app.post('/api/admin/photos/upload', requireAdmin, (req, res) => {
 
       const saved = [];
       for (const file of req.files) {
+        // Resize (max 1600px wide) + compress to JPEG - smaller file, quality stays sharp
+        const compressed = await sharp(file.buffer)
+          .rotate() // auto-fix orientation from phone cameras
+          .resize({ width: 1600, withoutEnlargement: true })
+          .jpeg({ quality: 82 })
+          .toBuffer();
+
         const doc = await Photo.create({
           category,
-          data: file.buffer,
-          contentType: file.mimetype
+          data: compressed,
+          contentType: 'image/jpeg'
         });
         saved.push({ _id: doc._id, category: doc.category, uploadedAt: doc.uploadedAt });
       }
