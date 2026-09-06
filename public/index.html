@@ -151,11 +151,50 @@
   .tray{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(140%); background:var(--offwhite); color:var(--charcoal); border-radius:50px; padding:12px 12px 12px 22px; display:flex; align-items:center; gap:16px; box-shadow:0 14px 40px rgba(0,0,0,0.4); z-index:600; transition: transform .45s cubic-bezier(.2,.8,.2,1); max-width:92vw; }
   .tray.show{ transform:translateX(-50%) translateY(0); }
   .tray .count{ font-size:0.9rem; font-weight:500; white-space:nowrap; }
+  .tray button.count{ border:none; background:none; color:var(--charcoal); padding:6px 0; cursor:pointer; font:inherit; text-align:left; }
   .tray .count b{ color:var(--brass); font-family:'Fraunces',serif; font-size:1.05rem; }
   .tray button.send{ background:var(--charcoal); color:var(--offwhite); border:none; border-radius:40px; padding:11px 20px; font-size:0.85rem; letter-spacing:0.04em; display:flex; align-items:center; gap:8px; cursor:pointer; transition:background .25s ease, transform .15s ease; white-space:nowrap; }
   .tray button.send:hover{ background:#000; transform:translateY(-1px); }
   .tray button.clear{ background:none; border:none; color:var(--charcoal); opacity:0.55; font-size:1.2rem; cursor:pointer; line-height:1; padding:6px; }
   .tray button.clear:hover{ opacity:1; }
+
+  /* ---------- SELECTED DESIGNS PANEL ---------- */
+  .selected-panel{
+    position:fixed; inset:0; z-index:700; background:var(--charcoal); color:var(--offwhite);
+    transform:translateY(100%); transition:transform .45s cubic-bezier(.2,.8,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .selected-panel.open{ transform:translateY(0); }
+  .selected-panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6vw; border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .selected-panel-head h2{ font-size:clamp(1.5rem,3.5vw,2.2rem); }
+  .selected-panel-close{
+    width:42px; height:42px; border-radius:50%; border:1px solid var(--line);
+    background:none; color:var(--offwhite); font-size:1.3rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:background .2s ease;
+  }
+  .selected-panel-close:hover{ background:rgba(245,241,232,0.08); }
+  .selected-panel-list{ flex:1; overflow-y:auto; padding:24px 6vw 60px; }
+  .selected-panel-row{
+    width:100%; display:flex; align-items:center; gap:16px; padding:12px 0;
+    border:none; border-bottom:1px solid var(--line); background:none; color:var(--offwhite);
+    text-align:left; cursor:pointer;
+  }
+  .selected-panel-row:hover .selected-panel-label{ color:var(--brass); }
+  .selected-panel-thumb{
+    width:76px; height:58px; flex-shrink:0; object-fit:cover; border-radius:2px;
+    border:1px solid var(--line); background:var(--plum);
+  }
+  .selected-panel-copy{ display:flex; flex-direction:column; gap:5px; }
+  .selected-panel-label{ font-family:'Fraunces',serif; font-size:1.1rem; transition:color .2s ease; }
+  .selected-panel-hint{ font-size:0.72rem; color:var(--ivory); opacity:0.65; }
+  .photo-card.locate-highlight{ animation:locateFlash 1.8s ease; }
+  @keyframes locateFlash{
+    0%,100%{ box-shadow:0 0 0 1px var(--line); }
+    25%,65%{ box-shadow:0 0 0 3px var(--brass), 0 0 24px rgba(200,155,92,0.55); }
+  }
 
   /* ---------- CTA ---------- */
   .cta{ padding:140px 6vw; text-align:center; border-top:1px solid var(--line); }
@@ -473,12 +512,21 @@
 
 <!-- ================= SELECTION TRAY ================= -->
 <div class="tray" id="tray">
-  <div class="count"><b id="tray-count">0</b> selected</div>
+  <button class="count" id="tray-count-button" type="button" aria-label="View selected designs"><b id="tray-count">0</b> selected</button>
   <button class="clear" id="tray-clear" aria-label="Clear selection" title="Clear selection">&times;</button>
   <button class="send" id="tray-send">
     Send on WhatsApp
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2 1 2.4c.1.1 1.6 2.5 4 3.5.6.2 1 .4 1.3.5.6.2 1.1.1 1.5.1.5-.1 1.6-.6 1.8-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.2L2 22l4.9-1.3C8.5 21.6 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3C4 14.7 3.6 13.4 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.4-8.4 8.4z"/></svg>
   </button>
+</div>
+
+<!-- ================= SELECTED DESIGNS PANEL ================= -->
+<div class="selected-panel" id="selected-panel" aria-hidden="true">
+  <div class="selected-panel-head">
+    <h2>Your Selected Designs</h2>
+    <button class="selected-panel-close" id="selected-panel-close" type="button" aria-label="Close selected designs">&times;</button>
+  </div>
+  <div class="selected-panel-list" id="selected-panel-list"></div>
 </div>
 
 
@@ -513,7 +561,7 @@ const CHAT_API_URL = "http://localhost:3000/api/chat";
   5. If a photo is missing, the card just shows a placeholder — nothing breaks.
 */
 
-const selected = new Map(); // key: "Hall-1" -> {category, index}
+const selected = new Map(); // key: "Hall-1" -> {category, index, src}
 
 /* ============================================================
    LIGHTBOX
@@ -674,14 +722,75 @@ function buildPhotoGrid(cat, container){
   const key = card.dataset.key;
   const isSelected = card.classList.toggle('selected');
   card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-  if(isSelected){ selected.set(key, {category: card.dataset.category, index: card.dataset.index}); }
+  if(isSelected){
+    selected.set(key, {
+      category: card.dataset.category,
+      index: card.dataset.index,
+      src: card.querySelector('img')?.getAttribute('src') || ''
+    });
+  }
   else{ selected.delete(key); }
   updateTray();
 }
 function updateTray(){
   document.getElementById('tray-count').textContent = selected.size;
   document.getElementById('tray').classList.toggle('show', selected.size > 0);
+  renderSelectedPanel();
 }
+function renderSelectedPanel(){
+  const list = document.getElementById('selected-panel-list');
+  list.innerHTML = '';
+  selected.forEach(({category, index, src}, key) => {
+    const row = document.createElement('button');
+    row.className = 'selected-panel-row';
+    row.type = 'button';
+    row.innerHTML = `
+      <img class="selected-panel-thumb" src="${src}" alt="${category} design ${index}" draggable="false">
+      <span class="selected-panel-copy">
+        <span class="selected-panel-label">${category} #${index}</span>
+        <span class="selected-panel-hint">Tap to locate design →</span>
+      </span>
+    `;
+    row.addEventListener('click', () => locateSelectedDesign(key));
+    list.appendChild(row);
+  });
+}
+function openSelectedPanel(){
+  renderSelectedPanel();
+  const panel = document.getElementById('selected-panel');
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeSelectedPanel(){
+  const panel = document.getElementById('selected-panel');
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
+  if(!overlay.classList.contains('open')) document.body.style.overflow = '';
+}
+async function locateSelectedDesign(key){
+  const design = selected.get(key);
+  if(!design) return;
+  closeSelectedPanel();
+  const category = CATEGORIES.find(cat => cat.label === design.category);
+  if(!category) return;
+  await openOverlay(category);
+  const card = Array.from(overlayGrid.querySelectorAll('.photo-card')).find(item => item.dataset.key === key);
+  if(!card) return;
+  card.scrollIntoView({behavior:'smooth', block:'center'});
+  card.classList.remove('locate-highlight');
+  void card.offsetWidth;
+  card.classList.add('locate-highlight');
+  setTimeout(() => card.classList.remove('locate-highlight'), 1900);
+}
+document.getElementById('tray-count-button').addEventListener('click', openSelectedPanel);
+document.getElementById('selected-panel-close').addEventListener('click', closeSelectedPanel);
+document.getElementById('selected-panel').addEventListener('click', (e) => {
+  if(e.target.id === 'selected-panel') closeSelectedPanel();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && document.getElementById('selected-panel').classList.contains('open')) closeSelectedPanel();
+});
 function buildWhatsAppMessage(){
   const grouped = {};
   selected.forEach(({category, index}) => { (grouped[category] ||= []).push(index); });
