@@ -74,6 +74,24 @@
   .bar{ width:100%; background:var(--brass); border-radius:3px 3px 0 0; min-height:2px; transition:height .3s ease; }
   .bar-label{ font-size:0.62rem; opacity:0.6; white-space:nowrap; transform:rotate(-40deg); transform-origin:top left; margin-top:4px; }
   .bar-count{ font-size:0.68rem; color:var(--brass); }
+  .slide-wrap{ position:relative; width:280px; height:52px; margin:0 auto; }
+  .slide-track{
+  position:absolute; inset:0; border-radius:26px;
+  background:rgba(245,241,232,0.08); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; z-index:1;
+}
+  .slide-hint{ font-size:0.8rem; opacity:0.65; letter-spacing:0.02em; }
+  .slide-thumb{
+  position:absolute; left:4px; top:4px; width:44px; height:44px; border-radius:50%;
+  background:var(--brass); color:var(--charcoal); display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; transition:left .45s cubic-bezier(.2,.8,.2,1);
+}
+.slide-thumb.sliding{ left:calc(100% - 48px); }
+.slide-real-btn{
+  position:absolute; inset:0; opacity:0.01; z-index:2; overflow:hidden; border-radius:26px;
+}
+.slide-real-btn > div{ transform:scale(2.4); transform-origin:left top; }
 </style>
 </head>
 <body>
@@ -81,7 +99,13 @@
 <div id="login-screen">
   <h1>Admin Panel</h1>
   <p>Only the site owner's Google account can access this dashboard.</p>
-  <div id="g_id_signin"></div>
+  <div class="slide-wrap">
+    <div class="slide-track">
+      <span class="slide-hint">press &amp; hold to sign in</span>
+      <div class="slide-thumb" id="slide-thumb">→</div>
+      </div>
+      <div class="slide-real-btn" id="g_id_signin"></div>
+    </div>
   <p id="error-msg"></p>
 </div>
 
@@ -191,6 +215,16 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   await fetch('/api/auth/logout', { method: 'POST' });
   showLogin();
 });
+  const slideWrap = document.querySelector('.slide-real-btn');
+  const slideThumb = document.getElementById('slide-thumb');
+  if(slideWrap && slideThumb){
+    const startSlide = () => {
+      slideThumb.classList.add('sliding');
+      setTimeout(() => slideThumb.classList.remove('sliding'), 2500);
+    };
+    slideWrap.addEventListener('mousedown', startSlide);
+    slideWrap.addEventListener('touchstart', startSlide);
+  }
 
 async function loadData(){
   const [visitorsRes, blockedRes, dailyRes] = await Promise.all([
