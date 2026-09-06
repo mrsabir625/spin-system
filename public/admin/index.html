@@ -69,11 +69,6 @@
     width:22px; height:22px; border-radius:50%; cursor:pointer; font-size:0.75rem; line-height:1;
   }
 
-  .chart-wrap{ display:flex; align-items:flex-end; gap:6px; height:140px; padding-top:10px; }
-  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
-  .bar{ width:100%; background:var(--brass); border-radius:3px 3px 0 0; min-height:2px; transition:height .3s ease; }
-  .bar-label{ font-size:0.62rem; opacity:0.6; white-space:nowrap; transform:rotate(-40deg); transform-origin:top left; margin-top:4px; }
-  .bar-count{ font-size:0.68rem; color:var(--brass); }
   .slide-wrap{ position:relative; width:280px; height:52px; margin:0 auto; }
   .slide-track{
   position:absolute; inset:0; border-radius:26px;
@@ -120,11 +115,6 @@
     <div class="stat-card"><div class="num" id="stat-unique">0</div><div class="label">Unique IPs</div></div>
     <div class="stat-card"><div class="num" id="stat-blocked">0</div><div class="label">Blocked IPs</div></div>
   </div>
-
-  <section>
-    <h2>Daily Visits (last 14 days)</h2>
-    <div class="chart-wrap" id="chart-wrap"></div>
-  </section>
 
   <section>
     <h2>Upload Photos</h2>
@@ -227,10 +217,9 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   }
 
 async function loadData(){
-  const [visitorsRes, blockedRes, dailyRes] = await Promise.all([
+  const [visitorsRes, blockedRes] = await Promise.all([
     fetch('/api/admin/visitors'),
-    fetch('/api/admin/blocked'),
-    fetch('/api/admin/stats/daily')
+    fetch('/api/admin/blocked')
   ]);
   if(!visitorsRes.ok || !blockedRes.ok){ showLogin('Session expired, please sign in again.'); return; }
   const visitors = await visitorsRes.json();
@@ -242,7 +231,6 @@ async function loadData(){
   document.getElementById('stat-unique').textContent = new Set(visitors.map(v => v.ip)).size;
   document.getElementById('stat-blocked').textContent = blocked.length;
 
-  if(dailyRes.ok){ renderDailyChart(await dailyRes.json()); }
 }
 
 // IPs the admin has clicked to highlight — stays highlighted across auto-refreshes
@@ -294,22 +282,6 @@ function toggleIpHighlight(ip){
   if(highlightedIps.has(ip)) highlightedIps.delete(ip);
   else highlightedIps.add(ip);
   loadData();
-}
-
-function renderDailyChart(days){
-  const wrap = document.getElementById('chart-wrap');
-  const max = Math.max(1, ...days.map(d => d.count));
-  wrap.innerHTML = days.map(d => {
-    const heightPct = Math.max(2, (d.count / max) * 100);
-    const shortDate = d.date.slice(5).replace('-', '/'); // MM/DD
-    return `
-      <div class="bar-col">
-        <span class="bar-count">${d.count || ''}</span>
-        <div class="bar" style="height:${heightPct}%"></div>
-        <span class="bar-label">${shortDate}</span>
-      </div>
-    `;
-  }).join('');
 }
 
 function renderBlocked(blocked){
