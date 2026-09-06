@@ -248,6 +248,7 @@ async function loadData(){
 // IPs the admin has clicked to highlight — stays highlighted across auto-refreshes
 const PAGE_SIZE = 15;
 let visitorsShown = PAGE_SIZE;
+const highlightedIps = new Set();
 
 function renderVisitors(visitors, blocked){
   const body = document.getElementById('visitors-body');
@@ -261,7 +262,7 @@ function renderVisitors(visitors, blocked){
   }
 
   const visible = visitors.slice(0, visitorsShown);
-  body.innerHTML = visible.map(v => 
+  body.innerHTML = visible.map(v => `
     <tr class="${highlightedIps.has(v.ip) ? 'ip-highlight' : ''}">
       <td>${new Date(v.time).toLocaleString()}</td>
       <td class="ip-clickable" onclick="toggleIpHighlight('${v.ip}')">${v.ip}</td>
@@ -270,18 +271,18 @@ function renderVisitors(visitors, blocked){
       <td>${v.os}</td>
       <td>${v.path}</td>
       <td>${blockedIps.has(v.ip)
-        ? <button class="btn btn-unblock" onclick="unblockIp('${v.ip}')">Unblock</button>
-        : <button class="btn btn-block" onclick="blockIp('${v.ip}')">Block</button>}</td>
+        ? '<button class="btn btn-unblock" onclick="unblockIp(\'' + v.ip + '\')">Unblock</button>'
+        : '<button class="btn btn-block" onclick="blockIp(\'' + v.ip + '\')">Block</button>'}</td>
     </tr>
-  ).join('');
+  `).join('');
 
   const remaining = visitors.length - visitorsShown;
   let btns = '';
   if(remaining > 0){
-    btns += <button class="btn" style="background:var(--brass);color:var(--charcoal);" onclick="showMoreVisitors()">Show More (${remaining} more)</button>;
+    btns += '<button class="btn" style="background:var(--brass);color:var(--charcoal);" onclick="showMoreVisitors()">Show More (' + remaining + ' more)</button>';
   }
   if(visitorsShown > PAGE_SIZE){
-    btns +=  <button class="btn" style="background:none;border:1px solid var(--line);color:var(--offwhite);" onclick="showLessVisitors()">Show Less</button>;
+    btns += ' <button class="btn" style="background:none;border:1px solid var(--line);color:var(--offwhite);" onclick="showLessVisitors()">Show Less</button>';
   }
   toggleWrap.innerHTML = btns;
 }
